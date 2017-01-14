@@ -1,0 +1,100 @@
+{
+    "variables": {
+        "drupal_version": "8.2.5"
+    },
+    "builders": [
+        {
+            "type": "amazon-ebs",
+            "name": "drupal-8-ami-us-east-1",
+            "ami_description": "My Drupal 8 barebone AMI ({{user `drupal_version`}}) (us-east-1)",
+            "region": "us-east-1",
+            "source_ami": "ami-e13739f6",
+            "instance_type": "t2.micro",
+            "ssh_username": "ubuntu",
+            "ami_name": "drupal-8-ami-{{timestamp}}",
+            "tags": {
+                "Name": "drupal-8-ami-{{timestamp}}",
+                "Distribution": "Ubuntu Server 16.04 LTS (HVM), SSD Volume Type",
+                "Drupal": "({{user `drupal_version`}})"
+            },
+            "ami_block_device_mappings": [
+                {
+                    "device_name": "/dev/sda1",
+                    "volume_size": 8,
+                    "volume_type": "gp2",
+                    "delete_on_termination": true
+                }
+            ],
+            "launch_block_device_mappings": [
+                {
+                    "device_name": "/dev/sda1",
+                    "volume_size": 8,
+                    "volume_type": "gp2",
+                    "delete_on_termination": true
+                }
+            ],
+            "vpc_id": "vpc-cc9aeba9",
+            "subnet_id": "subnet-940f76ae",
+            "associate_public_ip_address": true,
+            "security_group_ids": [
+                "sg-15a50671"
+            ],
+            "communicator": "ssh",
+            "ssh_pty": true
+        },
+        {
+            "type": "amazon-ebs",
+            "name": "drupal-8-ami-us-east-2",
+            "ami_description": "My Drupal 8 barebone AMI ({{user `drupal_version`}}) (us-east-2)",
+            "region": "us-east-2",
+            "source_ami": "ami-d1cb91b4",
+            "instance_type": "t2.micro",
+            "ssh_username": "ubuntu",
+            "ami_name": "drupal-8-ami-{{timestamp}}",
+            "tags": {
+                "Name": "drupal-8-ami-{{timestamp}}",
+                "Distribution": "Ubuntu Server 16.04 LTS (HVM), SSD Volume Type",
+                "Drupal": "({{user `drupal_version`}})"
+            },
+            "ami_block_device_mappings": [
+                {
+                    "device_name": "/dev/sda1",
+                    "volume_size": 8,
+                    "volume_type": "gp2",
+                    "delete_on_termination": true
+                }
+            ],
+            "launch_block_device_mappings": [
+                {
+                    "device_name": "/dev/sda1",
+                    "volume_size": 8,
+                    "volume_type": "gp2",
+                    "delete_on_termination": true
+                }
+            ],
+            "vpc_id": "sg-789c2d11",
+            "subnet_id": "subnet-60e84409",
+            "associate_public_ip_address": true,
+            "security_group_ids": [
+                "sg-789c2d11"
+            ],
+            "communicator": "ssh",
+            "ssh_pty": true
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "file",
+            "source": "./nginx/default",
+            "destination": "/tmp/nginx-default"
+        },
+        {
+            "type": "shell",
+            "inline": "wget https://ftp.drupal.org/files/projects/drupal-{{user `drupal_version`}}.tar.gz -O /tmp/drupal.tar.gz"
+        },
+        {
+            "type": "shell",
+            "script": "./provision.sh"
+        }
+    ]
+}
